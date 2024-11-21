@@ -26,18 +26,23 @@ DEFAULT_NEGATIVE_PROMPT = (
 )
 
 def parse_image(image_data):
-    """Parse and decode base64 image data."""
+    """Convert Base64 image data to a NumPy array."""
     if not image_data:
         raise ValueError("Image data is required but not provided.")
+    
+    # Decode the Base64 string and open the image
     image_bytes = base64.b64decode(image_data)
     image = Image.open(BytesIO(image_bytes))
-    return np.array(image)
+    
+    # Convert the image to a NumPy array
+    image_array = np.array(image)
+    return image_array
 
 def numpy_to_base64(image_array):
-    """Converts a NumPy image array to a Base64-encoded string."""
+    """Convert a NumPy array to Base64-encoded string."""
     image = Image.fromarray(image_array)
     buffer = BytesIO()
-    image.save(buffer, format="PNG")
+    image.save(buffer, format="PNG")  # Save the image as PNG (you can adjust the format if needed)
     buffer.seek(0)
     return base64.b64encode(buffer.read()).decode('utf-8')
 
@@ -47,8 +52,17 @@ def generate():
         # Get input JSON data
         data = request.json
         
-        # Parse images
-        id_image = parse_image(data.get('id_image'))
+        # Extract prompt and image
+        prompt = data.get('prompt')
+        base_64_image = data.get('id_image')
+        
+        # If no prompt or image, return an error
+        if not prompt or not id_image:
+            return jsonify({"error": "Both 'prompt' and 'id_image' are required"}), 400
+
+        id_image = parse_image(base_64_image)
+
+
         supp_images = [parse_image(data.get(f'supp_image{i}')) for i in range(1, 4)]
         supp_images = [img for img in supp_images if img is not None]
 
