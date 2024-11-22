@@ -46,6 +46,47 @@ def numpy_to_base64(image_array):
     buffer.seek(0)
     return base64.b64encode(buffer.read()).decode('utf-8')
 
+
+
+@torch.inference_mode()
+def run(*args):
+    id_image = args[0]
+    supp_images = args[1:4]
+    prompt, neg_prompt, scale, seed, steps, H, W, id_scale, num_zero, ortho = args[4:]
+    seed = int(seed)
+    if seed == -1:
+        seed = torch.Generator(device="cpu").seed()
+
+    pipeline.debug_img_list = []
+
+    attention.NUM_ZERO = num_zero
+    if ortho == 'v2':
+        attention.ORTHO = False
+        attention.ORTHO_v2 = True
+    elif ortho == 'v1':
+        attention.ORTHO = True
+        attention.ORTHO_v2 = False
+    else:
+        attention.ORTHO = False
+        attention.ORTHO_v2 = False
+
+    if id_image is not None:
+        id_image = resize_numpy_image_long(id_image, 1024)
+        supp_id_image_list = [
+            resize_numpy_image_long(supp_id_image, 1024) for supp_id_image in supp_images if supp_id_image is not None
+        ]
+        id_image_list = [id_image] + supp_id_image_list
+        uncond_id_embedding, id_embedding = pipeline.get_id_embedding(id_image_list)
+    else:
+        uncond_id_embedding = None
+        id_embedding = None
+
+    img = pipeline.inference(
+        prompt, (1, H, W), neg_prompt, id_embedding, uncond_id_embedding, id_scale, scale, steps, seed
+    )[0]
+
+    return np.array(img), str(seed), pipeline.debug_img_list
+
 @app.route('/generate', methods=['POST'])
 def generate():
     try:
@@ -78,50 +119,34 @@ def generate():
         num_zero = int(data.get('num_zero', 20))
         ortho = data.get('ortho', 'v2')
 
-        # Set up attention settings
-        attention.NUM_ZERO = num_zero
-        if ortho == 'v2':
-            attention.ORTHO = False
-            attention.ORTHO_v2 = True
-        elif ortho == 'v1':
-            attention.ORTHO = True
-            attention.ORTHO_v2 = False
-        else:
-            attention.ORTHO = False
-            attention.ORTHO_v2 = False
 
-        # Process ID image embeddings
-        if id_image is not None:
-            id_image = resize_numpy_image_long(id_image, 1024)
-            supp_id_image_list = [
-                resize_numpy_image_long(supp_id_image, 1024) for supp_id_image in supp_images
-            ]
-            id_image_list = [id_image] + supp_id_image_list
-            uncond_id_embedding, id_embedding = pipeline.get_id_embedding(id_image_list)
-        else:
-            uncond_id_embedding = None
-            id_embedding = None
+        inps = [
+            id_image,
+            supp_images[0],
+            supp_images[1],
+            supp_images[2],
+            prompt,
+            neg_prompt,
+            scale,
+            seed,
+            steps,
+            H,
+            W,
+            id_scale,
+            num_zero,
+            ortho,
+        ]
 
-        # Seed handling
-        if seed == -1:
-            seed = torch.Generator(device="cpu").seed()
-
-        # Inference
-        img = pipeline.inference(
-            prompt, (1, H, W), neg_prompt, id_embedding, uncond_id_embedding, id_scale, scale, steps, seed
-        )[0]
-
-        # Convert image to Base64
-        image_base64 = numpy_to_base64(img)
+        output, seed_output, intermediate_output = run(inps)
 
         return jsonify({
-            "output": image_base64,  # Base64-encoded image
-            "seed_output": str(seed),
-            "intermediate_output": pipeline.debug_img_list  # Debug images if needed
+            "output": output,  # Base64-encoded image
+            "seed_output": seed_output,
+            "intermediate_output": intermediate_output  # Debug images if needed
         })
     
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=7860)
+    app.run(debug=True, host='0.0.0.0', port=7861)
