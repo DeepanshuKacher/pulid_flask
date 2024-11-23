@@ -3,7 +3,6 @@ import argparse
 import gradio as gr
 import numpy as np
 import torch
-from data import img_data
 
 from pulid import attention_processor as attention
 from pulid.pipeline_v1_1 import PuLIDPipeline
@@ -106,8 +105,7 @@ jugger_example_inps = [
 
 @torch.inference_mode()
 def run(*args):
-    # id_image = args[0]
-    id_image = img_data['array_sample']
+    id_image = args[0]
     print(id_image)
     supp_images = args[1:4]
     prompt, neg_prompt, scale, seed, steps, H, W, id_scale, num_zero, ortho = args[4:]
