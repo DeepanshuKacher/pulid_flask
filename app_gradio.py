@@ -3,6 +3,7 @@ import argparse
 import gradio as gr
 import numpy as np
 import torch
+import requests
 
 from pulid import attention_processor as attention
 from pulid.pipeline_v1_1 import PuLIDPipeline
@@ -105,7 +106,12 @@ jugger_example_inps = [
 
 @torch.inference_mode()
 def run(*args):
-    id_image = args[0]
+
+    url = "https://m.media-amazon.com/images/M/MV5BODY0ZTBjMmMtYWFhYi00ZTkxLWI0OTItNTkxMmY1MDhhMWE2XkEyXkFqcGc@._V1_.jpg"
+    response = requests.get(url)
+    id_image = response.content
+    # id_image = args[0]
+    # id_image = args[0]
     print(id_image)
     supp_images = args[1:4]
     prompt, neg_prompt, scale, seed, steps, H, W, id_scale, num_zero, ortho = args[4:]
