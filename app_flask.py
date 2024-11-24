@@ -107,7 +107,11 @@ def run(*args):
 
     print('pass 4')
 
-    return numpy_to_base64(np.array(img)), str(seed), pipeline.debug_img_list
+    np_array_image = np.array(img)
+
+    print(np_array_image)
+
+    return numpy_to_base64(np_array_image), str(seed), pipeline.debug_img_list
 
 @app.route('/generate', methods=['POST'])
 def generate():
