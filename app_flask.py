@@ -63,7 +63,7 @@ def run(*args):
 
     supp_images = args[1:4]
     print('pass supp_images')
-    print("printing args:- ",args)
+    print("printing args:- ",args[4:])
     prompt, neg_prompt, scale, seed, steps, H, W, id_scale, num_zero, ortho = args[4:]
     print('pass prompt and all')
     seed = int(seed)
