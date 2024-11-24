@@ -161,6 +161,8 @@ def generate():
             ortho,
         ]
 
+        print('print inputs:- ',inps)
+
         output, seed_output, intermediate_output = run(inps)
 
         return jsonify({
