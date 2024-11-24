@@ -59,6 +59,8 @@ def run(*args):
     # Convert image to NumPy array
     id_image = np.array(image)
 
+    print('pass after 1 and before 2')
+
     supp_images = args[1:4]
     prompt, neg_prompt, scale, seed, steps, H, W, id_scale, num_zero, ortho = args[4:]
     seed = int(seed)
@@ -137,7 +139,6 @@ def generate():
         num_zero = int(data.get('num_zero', 20))
         ortho = data.get('ortho', 'v2')
 
-        print(id_image)
         inps = [
             id_image,
             None,
