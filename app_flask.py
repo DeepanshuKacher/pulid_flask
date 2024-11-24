@@ -111,7 +111,10 @@ def generate():
         # id_image = parse_image(base_64_image)
 
 
-        supp_images = [parse_image(data.get(f'supp_image{i}')) for i in range(1, 4)]
+        supp_images = [
+            parse_image(data.get(f'supp_image{i}')) if data.get(f'supp_image{i}') else None
+            for i in range(1, 4)
+        ]
         supp_images = [img for img in supp_images if img is not None]
         # supp_images = [None,None,None]
 
