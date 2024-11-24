@@ -50,7 +50,13 @@ def numpy_to_base64(image_array):
 
 @torch.inference_mode()
 def run(*args):
-    id_image = args[0]
+    # id_image = args[0]
+
+    image = Image.open("aman.jpeg")
+
+    # Convert image to NumPy array
+    id_image = np.array(image)
+
     supp_images = args[1:4]
     prompt, neg_prompt, scale, seed, steps, H, W, id_scale, num_zero, ortho = args[4:]
     seed = int(seed)
