@@ -77,6 +77,8 @@ def resize_numpy_image_long(image, resize_long_edge=768):
     h = int(h * k)
     w = int(w * k)
     image = cv2.resize(image, (w, h), interpolation=cv2.INTER_LANCZOS4)
+
+    print('pass 2.1')
     return image
 
 

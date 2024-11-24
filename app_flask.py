@@ -52,6 +52,7 @@ def numpy_to_base64(image_array):
 @torch.inference_mode()
 def run(*args):
     # id_image = args[0]
+    print('pass1')
 
     image = Image.open("raj_closeup.jpeg")
 
@@ -77,6 +78,8 @@ def run(*args):
         attention.ORTHO = False
         attention.ORTHO_v2 = False
 
+    print('pass 2')
+
     if id_image is not None:
         id_image = resize_numpy_image_long(id_image, 1024)
         supp_id_image_list = [
@@ -84,13 +87,18 @@ def run(*args):
         ]
         id_image_list = [id_image] + supp_id_image_list
         uncond_id_embedding, id_embedding = pipeline.get_id_embedding(id_image_list)
+        print('pass 2. last')
     else:
         uncond_id_embedding = None
         id_embedding = None
+    
+    print('pass 3')
 
     img = pipeline.inference(
         prompt, (1, H, W), neg_prompt, id_embedding, uncond_id_embedding, id_scale, scale, steps, seed
     )[0]
+
+    print('pass 4')
 
     return np.array(img), str(seed), pipeline.debug_img_list
 
