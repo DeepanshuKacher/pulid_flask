@@ -54,7 +54,6 @@ def numpy_to_base64(image_array):
 
 
 
-
 @torch.inference_mode()
 def run(*args):
     # id_image = args[0]
@@ -113,16 +112,15 @@ def run(*args):
 
     print('pass 4')
 
-        # Debugging the img type and shape
+    # Debugging the img type and shape
     print(f'img type: {type(img)}')
-    print(f'img shape: {getattr(img, "shape", "No shape")}')
-    
-    # If the image is not in ndarray format, handle the conversion
-    if isinstance(img, np.ndarray):
-        img_base64 = numpy_to_base64(img)
+
+    # Convert the img (PIL Image) to Base64 if it's a PIL Image
+    if isinstance(img, Image.Image):
+        img_base64 = numpy_to_base64(np.array(img))  # Convert PIL Image to NumPy array and then to Base64
     else:
-        # If img is a PIL Image or another format, convert to NumPy array first
-        img_base64 = numpy_to_base64(np.array(img))
+        # If img is already a NumPy array, just convert to Base64
+        img_base64 = numpy_to_base64(img)
 
     return img_base64, str(seed), pipeline.debug_img_list
 
