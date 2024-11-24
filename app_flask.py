@@ -52,7 +52,7 @@ def numpy_to_base64(image_array):
 def run(*args):
     # id_image = args[0]
 
-    image = Image.open("aman.jpeg")
+    image = Image.open("raj_closeup.jpeg")
 
     # Convert image to NumPy array
     id_image = np.array(image)
