@@ -59,10 +59,7 @@ def image_to_base64(img: Image.Image) -> str:
     return img_str
 
 
-import numpy as np
-import base64
-from PIL import Image
-from io import BytesIO
+
 
 def numpy_to_base64(image_array: np.ndarray, image_format: str = "PNG") -> str:
     """
@@ -89,10 +86,7 @@ def numpy_to_base64(image_array: np.ndarray, image_format: str = "PNG") -> str:
     # Convert Base64 bytes to a string and return
     return base64_encoded.decode('utf-8')
 
-import numpy as np
-from PIL import Image
-import base64
-from io import BytesIO
+
 
 def get_image_type(image) -> str:
     """
@@ -135,13 +129,13 @@ def get_image_type(image) -> str:
 
 @torch.inference_mode()
 def run(*args):
-    # id_image = args[0]
-    print('pass1')
+    id_image = args[0]
+    # print('pass1')
 
-    image = Image.open("raj_closeup.jpeg")
+    # image = Image.open("raj_closeup.jpeg")
 
     # Convert image to NumPy array
-    id_image = np.array(image)
+    # id_image = np.array(image)
 
     print('pass after 1 and before 2')
 
@@ -224,13 +218,13 @@ def generate():
         
         # Extract prompt and image
         prompt = data.get('prompt')
-        id_image = data.get('id_image')
+        base64_image = data.get('id_image')
         
         # If no prompt or image, return an error
-        if not prompt or not id_image:
+        if not prompt or not base64_image:
             return jsonify({"error": "Both 'prompt' and 'id_image' are required"}), 400
 
-        # id_image = parse_image(base_64_image)
+        id_image = parse_image(base64_image)
 
 
         # supp_images = [
