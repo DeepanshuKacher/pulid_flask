@@ -107,11 +107,20 @@ def run(*args):
 
     print('pass 4')
 
-    np_array_image = np.array(img)
+        # Debugging the img type and shape
+    print(f'img type: {type(img)}')
+    print(f'img shape: {getattr(img, "shape", "No shape")}')
+    
+    # If the image is not in ndarray format, handle the conversion
+    if isinstance(img, np.ndarray):
+        img_base64 = numpy_to_base64(img)
+    else:
+        # If img is a PIL Image or another format, convert to NumPy array first
+        img_base64 = numpy_to_base64(np.array(img))
 
-    print(np_array_image)
+    print(img_base64)
 
-    return numpy_to_base64(np_array_image), str(seed), pipeline.debug_img_list
+    return img_base64, str(seed), pipeline.debug_img_list
 
 @app.route('/generate', methods=['POST'])
 def generate():
