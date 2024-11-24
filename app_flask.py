@@ -58,6 +58,38 @@ def image_to_base64(img: Image.Image) -> str:
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return img_str
 
+
+import numpy as np
+import base64
+from PIL import Image
+from io import BytesIO
+
+def numpy_to_base64(image_array: np.ndarray, image_format: str = "PNG") -> str:
+    """
+    Converts a NumPy array representing an image to a Base64-encoded string.
+
+    Parameters:
+        image_array (np.ndarray): The NumPy array representing the image.
+        image_format (str): The format of the image (e.g., "PNG", "JPEG").
+
+    Returns:
+        str: Base64-encoded string of the image.
+    """
+    # Convert the NumPy array to a PIL Image
+    image = Image.fromarray(image_array)
+
+    # Save the image to a BytesIO buffer in the specified format
+    buffer = BytesIO()
+    image.save(buffer, format=image_format)
+    buffer.seek(0)
+
+    # Encode the buffer content to Base64
+    base64_encoded = base64.b64encode(buffer.read())
+
+    # Convert Base64 bytes to a string and return
+    return base64_encoded.decode('utf-8')
+
+
 @torch.inference_mode()
 def run(*args):
     # id_image = args[0]
@@ -115,8 +147,12 @@ def run(*args):
     )[0]
 
     np_image  = np.array(img)
+
+    base64_image = numpy_to_base64(np_image)
+
     print(img)
-    print(np_image)
+    # print(np_image)
+    print(base64_image)
 
 
     print('pass 4')
@@ -133,7 +169,7 @@ def run(*args):
         # If img is already a NumPy array, just convert to Base64
         img_base64 = numpy_to_base64(img)
 
-    return img_base64, str(seed), pipeline.debug_img_list
+    return base64_image, str(seed), pipeline.debug_img_list
 
 @app.route('/generate', methods=['POST'])
 def generate():
