@@ -62,10 +62,14 @@ def run(*args):
     print('pass after 1 and before 2')
 
     supp_images = args[1:4]
+    print('pass supp_images')
     prompt, neg_prompt, scale, seed, steps, H, W, id_scale, num_zero, ortho = args[4:]
+    print('pass prompt and all')
     seed = int(seed)
     if seed == -1:
         seed = torch.Generator(device="cpu").seed()
+
+    print('seed generated')
 
     pipeline.debug_img_list = []
 
