@@ -111,12 +111,11 @@ def generate():
         # id_image = parse_image(base_64_image)
 
 
-        supp_images = [
-            parse_image(data.get(f'supp_image{i}')) if data.get(f'supp_image{i}') else None
-            for i in range(1, 4)
-        ]
-        supp_images = [img for img in supp_images if img is not None]
-        # supp_images = [None,None,None]
+        # supp_images = [
+        #     parse_image(data.get(f'supp_image{i}')) if data.get(f'supp_image{i}') else None
+        #     for i in range(1, 4)
+        # ]
+        # supp_images = [img for img in supp_images if img is not None]
 
         # Extract other parameters
         prompt = data.get('prompt', 'portrait,color,cinematic,in garden,soft light,detailed face')
@@ -133,9 +132,9 @@ def generate():
         print(id_image)
         inps = [
             id_image,
-            supp_images[0],
-            supp_images[1],
-            supp_images[2],
+            None,
+            None,
+            None,
             prompt,
             neg_prompt,
             scale,
