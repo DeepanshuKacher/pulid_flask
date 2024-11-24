@@ -89,6 +89,49 @@ def numpy_to_base64(image_array: np.ndarray, image_format: str = "PNG") -> str:
     # Convert Base64 bytes to a string and return
     return base64_encoded.decode('utf-8')
 
+import numpy as np
+from PIL import Image
+import base64
+from io import BytesIO
+
+def get_image_type(image) -> str:
+    """
+    Determines the type of the input image: Base64 string, NumPy array, or PIL Image.
+
+    Parameters:
+        image: The input image to check.
+
+    Returns:
+        str: The type of the image ("Base64", "NumPy", "PIL", or "Unknown").
+    """
+    # Check if the image is a Base64 string
+    if isinstance(image, str):
+        try:
+            # Handle potential Base64 image prefix
+            if image.startswith("data:image"):
+                image = image.split(",")[1]
+            
+            # Try decoding the Base64 string
+            decoded_data = base64.b64decode(image)
+            # Verify it as an image
+            Image.open(BytesIO(decoded_data)).verify()
+            return "Base64"
+        except (base64.binascii.Error, IOError):
+            pass
+
+    # Check if the image is a NumPy array
+    if isinstance(image, np.ndarray):
+        # Validate that the array is suitable for an image
+        if image.ndim in [2, 3] and image.dtype in [np.uint8, np.float32, np.int16]:
+            return "NumPy"
+
+    # Check if the image is a PIL Image
+    if isinstance(image, Image.Image):
+        return "PIL"
+
+    return "Unknown"
+
+
 
 @torch.inference_mode()
 def run(*args):
@@ -150,9 +193,11 @@ def run(*args):
 
     base64_image = numpy_to_base64(np_image)
 
+    print(get_image_type(base64_image))
+
     print(img)
     # print(np_image)
-    print(base64_image)
+    # print(base64_image)
 
 
     print('pass 4')
@@ -169,7 +214,7 @@ def run(*args):
         # If img is already a NumPy array, just convert to Base64
         img_base64 = numpy_to_base64(img)
 
-    return base64_image, str(seed), pipeline.debug_img_list
+    return base64_image, str(seed)
 
 @app.route('/generate', methods=['POST'])
 def generate():
@@ -225,12 +270,12 @@ def generate():
 
         print('print inputs:- ',inps)
 
-        output, seed_output, intermediate_output = run(*inps)
-
+        output, seed_output,  = run(*inps)
+        print('just have to send output')
         return jsonify({
             "output": output,  # Base64-encoded image
             "seed_output": seed_output,
-            "intermediate_output": intermediate_output  # Debug images if needed
+            # "intermediate_output": intermediate_output  # Debug images if needed
         })
     
     except Exception as e:
