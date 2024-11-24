@@ -118,8 +118,6 @@ def run(*args):
         # If img is a PIL Image or another format, convert to NumPy array first
         img_base64 = numpy_to_base64(np.array(img))
 
-    print(img_base64)
-
     return img_base64, str(seed), pipeline.debug_img_list
 
 @app.route('/generate', methods=['POST'])
