@@ -270,7 +270,7 @@ def generate():
 
         print('print inputs:- ',inps)
 
-        output, seed_output,  = run(*inps)
+        output, seed_output  = run(*inps)
         print('just have to send output')
         return jsonify({
             "output": output,  # Base64-encoded image
