@@ -131,12 +131,6 @@ def get_image_type(image) -> str:
 def run(*args):
     id_image = args[0]
 
-    # image = Image.open("raj_closeup.jpeg")
-
-    # Convert image to NumPy array
-    # id_image = np.array(image)
-
-
     supp_images = args[1:4]
     prompt, neg_prompt, scale, seed, steps, H, W, id_scale, num_zero, ortho = args[4:]
     seed = int(seed)
