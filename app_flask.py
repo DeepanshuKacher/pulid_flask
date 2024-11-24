@@ -122,7 +122,7 @@ def run(*args):
     # Convert the img (PIL Image) to Base64 if it's a PIL Image
     if isinstance(img, Image.Image):
         print("this if is a PIL Image")
-        img_base64 = image_to_base64(np.array(img))  # Convert PIL Image to NumPy array and then to Base64
+        img_base64 = image_to_base64(img) # Convert PIL Image to NumPy array and then to Base64
     else:
         print('this is not a pil image')
         # If img is already a NumPy array, just convert to Base64
