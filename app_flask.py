@@ -40,12 +40,18 @@ def parse_image(image_data):
     return image_array
 
 def numpy_to_base64(image_array):
-    """Convert a NumPy array to Base64-encoded string."""
-    image = Image.fromarray(image_array)
+    """Convert a NumPy array or PIL Image to a Base64-encoded string."""
+    # If the input is a NumPy array, convert it to a PIL Image
+    if isinstance(image_array, np.ndarray):
+        image = Image.fromarray(image_array)
+    else:
+        image = image_array
+
     buffer = BytesIO()
     image.save(buffer, format="PNG")  # Save the image as PNG (you can adjust the format if needed)
     buffer.seek(0)
     return base64.b64encode(buffer.read()).decode('utf-8')
+
 
 
 
