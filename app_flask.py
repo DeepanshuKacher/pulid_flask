@@ -101,13 +101,13 @@ def generate():
         
         # Extract prompt and image
         prompt = data.get('prompt')
-        base_64_image = data.get('id_image')
+        id_image = data.get('id_image')
         
         # If no prompt or image, return an error
         if not prompt or not id_image:
             return jsonify({"error": "Both 'prompt' and 'id_image' are required"}), 400
 
-        id_image = parse_image(base_64_image)
+        # id_image = parse_image(base_64_image)
 
 
         supp_images = [parse_image(data.get(f'supp_image{i}')) for i in range(1, 4)]
@@ -125,7 +125,7 @@ def generate():
         num_zero = int(data.get('num_zero', 20))
         ortho = data.get('ortho', 'v2')
 
-
+        print(id_image)
         inps = [
             id_image,
             supp_images[0],
