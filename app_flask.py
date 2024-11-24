@@ -114,6 +114,8 @@ def run(*args):
         prompt, (1, H, W), neg_prompt, id_embedding, uncond_id_embedding, id_scale, scale, steps, seed
     )[0]
 
+    print(img)
+
     print('pass 4')
 
     # Debugging the img type and shape
