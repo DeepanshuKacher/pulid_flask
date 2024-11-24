@@ -10,6 +10,7 @@ from pulid.utils import resize_numpy_image_long
 
 # Initialize Flask app
 app = Flask(__name__)
+app.config["DEBUG"] = True  # Enables debug mode globally
 
 # Torch settings
 torch.set_grad_enabled(False)
@@ -110,9 +111,9 @@ def generate():
         # id_image = parse_image(base_64_image)
 
 
-        # supp_images = [parse_image(data.get(f'supp_image{i}')) for i in range(1, 4)]
-        # supp_images = [img for img in supp_images if img is not None]
-        supp_images = [None,None,None]
+        supp_images = [parse_image(data.get(f'supp_image{i}')) for i in range(1, 4)]
+        supp_images = [img for img in supp_images if img is not None]
+        # supp_images = [None,None,None]
 
         # Extract other parameters
         prompt = data.get('prompt', 'portrait,color,cinematic,in garden,soft light,detailed face')
@@ -156,4 +157,4 @@ def generate():
         return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=7861)
+    app.run(host='0.0.0.0', port=7861)
