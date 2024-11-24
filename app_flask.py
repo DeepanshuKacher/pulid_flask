@@ -52,7 +52,11 @@ def numpy_to_base64(image_array):
     buffer.seek(0)
     return base64.b64encode(buffer.read()).decode('utf-8')
 
-
+def image_to_base64(img: Image.Image) -> str:
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")  # You can change the format (e.g., JPEG, PNG)
+    img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+    return img_str
 
 @torch.inference_mode()
 def run(*args):
@@ -117,8 +121,10 @@ def run(*args):
 
     # Convert the img (PIL Image) to Base64 if it's a PIL Image
     if isinstance(img, Image.Image):
-        img_base64 = numpy_to_base64(np.array(img))  # Convert PIL Image to NumPy array and then to Base64
+        print("this if is a PIL Image")
+        img_base64 = image_to_base64(np.array(img))  # Convert PIL Image to NumPy array and then to Base64
     else:
+        print('this is not a pil image')
         # If img is already a NumPy array, just convert to Base64
         img_base64 = numpy_to_base64(img)
 
