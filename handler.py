@@ -178,18 +178,23 @@ def generate():
         # Get input JSON data
         data = request.json
             
-        image1 = base64_to_numpy(data.get('image1'))
-        image2 = base64_to_numpy(data.get('image2'))
-        image3 = base64_to_numpy(data.get('image3'))
-        image4 = base64_to_numpy(data.get('image4'))
+        image1_base64 = data.get('image1')
+        image2_base64 = data.get('image2')
+        image3_base64 = data.get('image3')
+        image4_base64 = data.get('image4')
         prompt = data.get('prompt')
 
         if not prompt:
             raise Exception('Please provide a prompt')
         
-        if not image1:
+        if not image1_base64:
             raise Exception('Please provide at least one image')
 
+            
+        image1_numpy = base64_to_numpy(image1_base64)
+        image2_numpy = base64_to_numpy(image2_base64)
+        image3_numpy = base64_to_numpy(image3_base64)
+        image4_numpy = base64_to_numpy(image4_base64)
     
         neg_prompt = data.get('neg_prompt', DEFAULT_NEGATIVE_PROMPT)
         scale = float(data.get('scale', 7.0))
@@ -202,10 +207,10 @@ def generate():
         ortho = data.get('ortho', 'v2')
 
         inps = [
-            image1,
-            image2,
-            image3,
-            image4,
+            image1_numpy,
+            image2_numpy,
+            image3_numpy,
+            image4_numpy,
             prompt,
             neg_prompt,
             scale,
