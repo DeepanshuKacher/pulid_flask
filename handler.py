@@ -6,8 +6,11 @@ from io import BytesIO
 from pulid import attention_processor as attention
 from pulid.pipeline_v1_1 import PuLIDPipeline
 from pulid.utils import resize_numpy_image_long
-import runpod
+from flask import Flask, request, jsonify
 
+# import runpod
+app = Flask(__name__)
+app.config["DEBUG"] = True  # Enables debug mode globally
 
 torch.set_grad_enabled(False)
 
@@ -169,7 +172,67 @@ def handler(event):
     }
 
 
+@app.route('/generate', methods=['POST'])
+def generate():
+    try:
+        # Get input JSON data
+        data = request.json
+            
+        image1 = base64_to_numpy(data.get('image1'))
+        image2 = base64_to_numpy(data.get('image2'))
+        image3 = base64_to_numpy(data.get('image3'))
+        image4 = base64_to_numpy(data.get('image4'))
+        prompt = data.get('prompt')
+
+        if not prompt:
+            raise Exception('Please provide a prompt')
+        
+        if not image1:
+            raise Exception('Please provide at least one image')
+
+    
+        neg_prompt = data.get('neg_prompt', DEFAULT_NEGATIVE_PROMPT)
+        scale = float(data.get('scale', 7.0))
+        seed = int(data.get('seed', -1))
+        steps = int(data.get('steps', 25))
+        H = int(data.get('H', 1152))
+        W = int(data.get('W', 896))
+        id_scale = float(data.get('id_scale', 0.8))
+        num_zero = int(data.get('num_zero', 20))
+        ortho = data.get('ortho', 'v2')
+
+        inps = [
+            image1,
+            image2,
+            image3,
+            image4,
+            prompt,
+            neg_prompt,
+            scale,
+            seed,
+            steps,
+            H,
+            W,
+            id_scale,
+            num_zero,
+            ortho,
+        ]
+
+        output, seed_output  = run(*inps)
+
+        return jsonify({
+            "output": output,  # Base64-encoded image
+            "seed_output": seed_output,
+            # "intermediate_output": intermediate_output  # Debug images if needed
+        })
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+
+# if __name__ == '__main__':
+#     runpod.serverless.start({'handler': handler})
 
 if __name__ == '__main__':
-    runpod.serverless.start({'handler': handler})
-
+    app.run(host='0.0.0.0', port=7861)
